@@ -1,0 +1,5 @@
+application-local.properties
+uploads/
+target/
+*.env
+.idea/

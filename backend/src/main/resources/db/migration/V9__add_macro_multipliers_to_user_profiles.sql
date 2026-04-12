@@ -1,0 +1,3 @@
+ALTER TABLE user_profiles
+    ADD COLUMN protein_multiplier DOUBLE PRECISION NOT NULL DEFAULT 2.0,
+    ADD COLUMN fat_multiplier     DOUBLE PRECISION NOT NULL DEFAULT 0.8;
