@@ -1,0 +1,31 @@
+.env
+
+# Python / legacy
+.venv/
+**/__pycache__/
+legacy/python-mealplan/.venv/
+
+# Backend
+backend/target/
+backend/uploads/
+backend/application-local.properties
+backend/.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/dev-dist/
+frontend/*.local
+frontend/.DS_Store
+
+# Editor
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log

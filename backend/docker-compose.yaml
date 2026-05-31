@@ -1,2 +1,2 @@
-# Postgres is started from the repo root — see ../docker-compose.yaml
-# Run from Internal/: docker compose up
+# Full stack is started from the repo root — see ../docker-compose.yaml and ../README.md
+# From repo root: docker compose up

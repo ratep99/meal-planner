@@ -8,20 +8,15 @@ Spring Boot API for household meal planning: profiles (TDEE), ingredients (incl.
 
 ### Docker Compose (full stack, local dev)
 
-From the directory that contains **`docker-compose.yaml`** (often a parent folder that holds both repositories as `backend/` and `frontend/`):
+From the **repository root** (parent of this directory):
 
 ```bash
 docker compose up
 ```
 
-**Separate git repositories:** clone backend and frontend anywhere on disk, then either put `docker-compose.yaml` and `.env` in a parent folder and set `MEAL_PLANNER_BACKEND_DIR` / `MEAL_PLANNER_FRONTEND_DIR` in `.env` (see `.env.example` next to the compose file), or keep the default `./backend` and `./frontend` names under one workspace.
+See the root [README.md](../README.md) for setup, volume notes, and when to rebuild services.
 
-Open the UI at `http://localhost:5173`. Postgres data, Maven cache, uploaded recipe images, and `node_modules` are kept in named volumes, so `docker compose down` (without `-v`) does not wipe the database.
-
-- **Java or frontend source only:** save files; restart the backend container if you need a clean JVM reload (Spring Boot dev server does not hot-reload by default).
-- **`pom.xml` or new Java dependencies:** `docker compose build backend && docker compose up`.
-- **`package.json` / `package-lock.json`:** remove the `frontend_node_modules` volume or run `docker compose run --rm --entrypoint "" frontend npm ci`, then `docker compose up`.
-- **Flyway migrations:** restart the `backend` service.
+Open the UI at `http://localhost:5173`.
 
 ## Profiles: calories and macros after a goal change
 
