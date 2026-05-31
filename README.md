@@ -39,3 +39,13 @@ docker compose -p internal up
 | [legacy/python-mealplan/](legacy/python-mealplan/) | Older Python/YAML meal plan prototype (not part of the Docker stack) |
 
 Specification: [backend/meal-planner-spec.md](backend/meal-planner-spec.md)
+
+## Publishing to GitHub
+
+If this clone is not on GitHub yet, run (requires `gh auth login` and SSH to GitHub):
+
+```bash
+./scripts/finish-github-migration.sh
+```
+
+That creates `ratep99/meal-planner`, pushes the monorepo, adds moved notices to the old split repos, and archives them.
