@@ -30,15 +30,34 @@ docker compose -p internal up
 | Flyway SQL (`backend/src/main/resources/db/migration`) | Restart the `backend` service |
 | `docker-compose.yaml` or Dockerfiles | `docker compose up --build` |
 
+## Checks
+
+The host needs neither Node nor a JDK — both checks run in containers:
+
+```bash
+./scripts/check-frontend.sh    # tsc + eslint (--build also runs the vite build)
+```
+
+```bash
+./scripts/check-backend.sh     # mvn test, starts the db service first
+```
+
+```bash
+./scripts/check-all.sh         # both
+```
+
+The first run of either is slow (dependency download into a cached volume); later runs are quick.
+
 ## Repository layout
 
 | Path | Description |
 | ---- | ----------- |
 | [backend/](backend/) | Spring Boot API — see [backend/README.md](backend/README.md) |
 | [frontend/](frontend/) | Vite + React UI |
+| [docs/spec.md](docs/spec.md) | Full specification — single source of truth |
 | [legacy/python-mealplan/](legacy/python-mealplan/) | Older Python/YAML meal plan prototype (not part of the Docker stack) |
 
-Specification: [backend/meal-planner-spec.md](backend/meal-planner-spec.md)
+Specification: [docs/spec.md](docs/spec.md)
 
 ## Publishing to GitHub
 

@@ -2,7 +2,9 @@
 
 Spring Boot API for household meal planning: profiles (TDEE), ingredients (incl. Open Food Facts), recipes, meal plans, shopping lists, PDF export.
 
-**Specification:** [meal-planner-spec.md](meal-planner-spec.md) (backend + frontend UI spec).
+**Specification:** [../docs/spec.md](../docs/spec.md) (backend + frontend UI spec — single source of truth).
+
+**Checks:** `./scripts/check-backend.sh` from the repository root (runs `mvn test` in a JDK 17 container).
 
 **Run:** `./mvnw spring-boot:run` (requires PostgreSQL and DB `mealplanner`). Use `application-local.properties` for credentials and overrides (not committed).
 
