@@ -68,6 +68,6 @@ npm run build
 fi
 
 # --no-deps: typecheck and lint need neither the API nor the database.
-docker compose run --rm --no-deps --entrypoint sh frontend -c "$INNER"
+docker compose run --rm --build --no-deps --entrypoint sh frontend -c "$INNER"
 
 echo "frontend OK"

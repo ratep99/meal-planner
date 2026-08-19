@@ -19,6 +19,6 @@ echo "--- starting database ---"
 docker compose up -d --wait db
 
 echo "--- mvn test ---"
-docker compose run --rm --no-deps backend ./mvnw -B test "$@"
+docker compose run --rm --build --no-deps backend ./mvnw -B test "$@"
 
 echo "backend OK"
