@@ -1,55 +1,66 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/*
+ * Tailwind 4 keeps the design tokens here rather than in tailwind.config.js,
+ * which no longer exists. Names follow Tailwind's theme namespaces, so
+ * --color-surface-muted produces bg-surface-muted, --shadow-card produces
+ * shadow-card, and so on. Add a token here and the utility exists.
+ */
+@theme {
+  --color-background: #fafaf8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f4f1;
+  --color-border: #e5e5e0;
+  --color-text-primary: #1a1a18;
+  --color-text-secondary: #6b6b63;
+  --color-text-muted: #9e9e95;
+
+  --color-accent: #2d6a4f;
+  --color-accent-light: #d8f3dc;
+  --color-accent-hover: #245a42;
+
+  --color-breakfast: #f4a261;
+  --color-lunch: #2d6a4f;
+  --color-dinner: #264653;
+  --color-snack: #e9c46a;
+
+  --color-macro-protein: #e76f51;
+  --color-macro-carbs: #2a9d8f;
+  --color-macro-fat: #e9c46a;
+  --color-macro-kcal: #264653;
+
+  --color-destructive: #c0392b;
+  --color-warning: #f39c12;
+  --color-success: #27ae60;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+  --container-content: 1200px;
+
+  --spacing-sidebar: 240px;
+  --spacing-sidebar-collapsed: 64px;
+}
 
 @layer base {
-  :root {
-    --background: #fafaf8;
-    --surface: #ffffff;
-    --surface-muted: #f4f4f1;
-    --border: #e5e5e0;
-    --text-primary: #1a1a18;
-    --text-secondary: #6b6b63;
-    --text-muted: #9e9e95;
-
-    --accent: #2d6a4f;
-    --accent-light: #d8f3dc;
-    --accent-hover: #245a42;
-
-    --breakfast: #f4a261;
-    --lunch: #2d6a4f;
-    --dinner: #264653;
-    --snack: #e9c46a;
-
-    --macro-protein: #e76f51;
-    --macro-carbs: #2a9d8f;
-    --macro-fat: #e9c46a;
-    --macro-kcal: #264653;
-
-    --destructive: #c0392b;
-    --warning: #f39c12;
-    --success: #27ae60;
-
-    --text-xs: 0.75rem;
-    --text-sm: 0.875rem;
-    --text-base: 1rem;
-    --text-lg: 1.125rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-    --text-3xl: 1.875rem;
-    --text-4xl: 2.25rem;
-
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06),
-      0 4px 12px rgba(0, 0, 0, 0.04);
-    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.1);
-    --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
-  }
-
   html {
     @apply bg-background text-text-primary antialiased;
   }
