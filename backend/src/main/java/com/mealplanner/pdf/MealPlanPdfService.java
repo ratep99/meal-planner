@@ -120,7 +120,7 @@ public class MealPlanPdfService {
         }
 
         doc.add(new Paragraph(plan.getName())
-                .setBold()
+                .simulateBold()
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER));
         doc.add(new Paragraph(dateLine + "  ·  Day " + dayNumber + "  ·  " + profileNames)
@@ -131,7 +131,7 @@ public class MealPlanPdfService {
 
         for (MealType mt : MealType.values()) {
             doc.add(new Paragraph(labelMealType(mt))
-                    .setBold()
+                    .simulateBold()
                     .setFontSize(13)
                     .setMarginTop(8));
             List<MealPlanEntry> entries = byMeal.getOrDefault(mt, List.of());
@@ -141,12 +141,12 @@ public class MealPlanPdfService {
             }
             for (MealPlanEntry entry : entries) {
                 doc.add(new Paragraph(entry.getRecipe().getName())
-                        .setBold()
+                        .simulateBold()
                         .setFontSize(11)
                         .setMarginTop(6));
                 doc.add(new Paragraph(entry.getUserProfile().getDisplayName())
                         .setFontSize(9)
-                        .setItalic()
+                        .simulateItalic()
                         .setFontColor(ColorConstants.DARK_GRAY));
 
                 for (RecipeIngredient ri : entry.getRecipe().getIngredients()) {
@@ -177,7 +177,7 @@ public class MealPlanPdfService {
         doc.add(new Paragraph(String.format(Locale.US,
                 "Daily totals: %.0f kcal  ·  Protein %.1fg  ·  Carbs %.1fg  ·  Fat %.1fg",
                 totalKcal, totalP, totalC, totalF))
-                .setBold()
+                .simulateBold()
                 .setFontSize(11)
                 .setTextAlignment(TextAlignment.CENTER));
     }

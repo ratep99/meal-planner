@@ -44,7 +44,7 @@ public class ShoppingListPdfService {
         doc.setMargins(48, 48, 48, 48);
 
         doc.add(new Paragraph(list.getName())
-                .setBold()
+                .simulateBold()
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER));
         doc.add(new Paragraph(list.getDateRangeStart() + "  –  " + list.getDateRangeEnd())
@@ -60,7 +60,7 @@ public class ShoppingListPdfService {
             }
             catItems.sort(Comparator.comparing(i -> i.getIngredient().getName(), String.CASE_INSENSITIVE_ORDER));
             doc.add(new Paragraph(labelCategory(cat))
-                    .setBold()
+                    .simulateBold()
                     .setFontSize(12)
                     .setMarginTop(10));
             for (ShoppingListItem it : catItems) {
