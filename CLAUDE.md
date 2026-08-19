@@ -56,9 +56,10 @@ To actually use the app: `docker compose up`, then http://localhost:5173.
 
 ## Known gaps — do not treat these as done
 
-- **Tests are narrow, not few.** The backend suite is 33 cases, but 32 of them are `TDEECalculatorTest` and
-  the last is a context-load smoke test. `ScalingCalculator`, `MacroCalculator`, `ShoppingListService` and
-  every PDF service are untested, and the frontend has no test runner installed at all.
+- **Tests cover the calculators only.** The backend suite is 61 cases across `TDEECalculatorTest`,
+  `MacroCalculatorTest` and `ScalingCalculatorTest`, plus a context-load smoke test. Everything with a
+  dependency on Spring or the database is untested — `MealPlanService`, `ShoppingListService`, the PDF
+  services and every controller. The frontend has no test runner installed at all.
 - **No CI.** Nothing runs on push; the scripts above are the only gate.
 - **Four oversized components**: `pages/Ingredients.tsx` (652 lines), `pages/planner/MealPlanner.tsx` (622),
   `pages/recipes/RecipeForm.tsx` (565), `pages/profiles/ProfileForm.tsx` (540).

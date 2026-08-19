@@ -79,4 +79,11 @@ top-level packages.
 no Spring context, a documented reference profile with the arithmetic spelled out in the class comment. `MealPlannerApplicationTests` is a
 context-load smoke test and needs a live PostgreSQL, which is why the check script starts `db` first.
 
-`ScalingCalculator` and `MacroCalculator` have no tests yet and are the highest-value place to add them.
+`MacroCalculatorTest` and `ScalingCalculatorTest` follow the same shape and cover the nutrition math end
+to end, including the two behaviours that look wrong at first glance: piece scaling rounds before computing
+macros (so piece-based recipes drift off the calorie target, while weight-only recipes hit it exactly), and
+`optional` lines still count towards recipe macros.
+
+Untested and worth covering next: `ShoppingListService` aggregation, and `MealPlanService.assignRecipe` /
+`refreshEntriesForUserProfile`. Those need a Spring context or hand-built repository fakes, which is why
+they were not done alongside the pure calculators.
