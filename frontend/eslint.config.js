@@ -23,6 +23,16 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
+      // The codebase marks deliberately-unused params with a leading underscore
+      // (e.g. `macroBand(actual, target, _kind)`); honour that convention.
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 );
