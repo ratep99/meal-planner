@@ -198,12 +198,12 @@ MealPlanEntry {
 }
 ```
 
-**Scaling logic**
+**Portion logic**
+
+A meal is planned exactly as its recipe is written. **Nothing is scaled on the user's behalf.**
 
 ```
-mealKcalTarget = userProfile.calculatedKcal / mealsPerDay
-
-scalingFactor = mealKcalTarget / recipe.totalKcal
+scalingFactor = request.scalingFactor, or 1.0 when absent
 
 For each RecipeIngredient:
   scaledQuantity = quantity × scalingFactor
@@ -212,7 +212,21 @@ For PIECE ingredients:
   scaledQuantity = round to nearest integer, minimum 1
 ```
 
-When a **UserProfile** is updated, all **MealPlanEntry** rows for that profile are recomputed from stored `recipeId`, `mealsPerDay`, and updated profile targets.
+`scalingFactor` is accepted on entry create/update (range 0.1–10.0) and persisted, so a portion is
+always a choice someone made rather than something the app inferred. A day total is therefore the sum
+of what is actually planned, and may legitimately sit under or over the profile's target.
+
+Earlier versions derived the factor automatically as `calculatedKcal / mealsPerDay / recipe.totalKcal`,
+forcing every entry — snacks included — onto an identical calorie figure. That is gone: it silently
+multiplied ingredient quantities (a 192 kcal snack became 920 kcal, i.e. 120 g of whey and 720 g of
+kiwi) and, because `mealsPerDay` defaulted to 3 while the planner shows four meal rows, it overshot
+the daily target by a third.
+
+`mealsPerDay` is still stored on the entry, but only the explicit fit-to-target action reads it.
+
+When a **UserProfile** is updated, **MealPlanEntry** macro totals are recomputed from the recipe's
+current ingredients, keeping each entry's stored `scalingFactor`. Editing a profile never re-portions
+meals that are already planned.
 
 ---
 
@@ -384,7 +398,7 @@ Use `application-local.properties` for secrets (not committed). No JWT variables
 
 1. **PIECE rounding (scaling):** nearest integer, **minimum 1**.
 2. **Recipe macros:** recalculate on every `RecipeIngredient` change. **Deleting a recipe** deletes every `MealPlanEntry` that referenced it, removes `{id}.jpg` if present, then deletes the recipe (`recipe_ingredients` cascade in DB).
-3. **Scaling factor:** `profile.calculatedKcal` (**goal-adjusted**) / `mealsPerDay` / `recipe.totalKcal`; persisted on entry; refreshed when profile or entry changes.
+3. **Portion factor:** defaults to **1.0** — the recipe as written. Set explicitly per entry (0.1–10.0) and persisted. Never derived from the profile, and never changed behind the user's back.
 4. **Shopping list:** aggregate same ingredient across plans; no duplicate rows.
 5. **`manualOverride`:** block OFF overwrite of nutrition fields.
 6. **Meal plan `daysCount`:** 1–14; **PUT** may send only `{ "daysCount": N }` (partial update).

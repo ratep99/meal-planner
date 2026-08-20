@@ -48,6 +48,9 @@ To actually use the app: `docker compose up`, then http://localhost:5173.
   the schema, never edit an applied migration — add `V11__…`, `V12__…` and so on.
 - **The API is camelCase JSON throughout**, and frontend types in `frontend/src/types/` mirror backend
   DTOs field for field. Change both sides in the same commit.
+- **Meals are not scaled automatically.** An entry uses its recipe as written (factor 1.0) unless a
+  `scalingFactor` is explicitly sent. Deriving portions from the profile is a design that was removed
+  deliberately — see the portion logic section in the spec before reintroducing anything like it.
 - **The nutrition math is the product.** `TDEECalculator`, `MacroCalculator` and `ScalingCalculator` on the
   backend, `lib/macros.ts`, `lib/planner.ts` and `lib/tdee.ts` on the frontend. A silent rounding change
   here produces a wrong printed meal plan and nobody notices. Touch them only deliberately, and extend

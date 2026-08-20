@@ -62,9 +62,13 @@ top-level packages.
   fresh totals; there is no cached macro column to keep in sync and none should be added.
 - **PIECE ingredients round to the nearest integer, minimum 1** when scaling. A plan that says "0 eggs"
   is a bug.
-- **Scaling uses `profile.calculatedKcal`** (goal-adjusted), never the raw maintenance `tdee`.
-- **Changing a profile must refresh its meal plan entries** — `MealPlanService.refreshEntriesForUserProfile`.
-  Stored `calculatedKcal`/macros on entries go stale otherwise.
+- **Meal plan entries are never scaled automatically.** `assignRecipe` and `updateEntry` use the
+  request's `scalingFactor` when present and 1.0 otherwise — the recipe as written. Do not reintroduce
+  a factor derived from the profile; that behaviour was removed on purpose.
+- **Changing a profile refreshes entry macro totals but keeps each entry's portion** —
+  `MealPlanService.refreshEntriesForUserProfile`. Recompute from the recipe's current ingredients using
+  the stored `scalingFactor`; re-portioning a planned meal behind the user's back is the bug this
+  replaced.
 - **Images:** local filesystem at `${app.upload.dir}/recipes/{recipeId}.jpg`; API exposes `imageFilename`;
   the multipart form field is **`image`**, not `file`. Spring serves `/uploads/**` via `WebMvcConfig`.
 - **Deleting a recipe** first deletes referencing `MealPlanEntry` rows (no DB cascade on that FK), then the
