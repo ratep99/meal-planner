@@ -3,7 +3,7 @@
 Spring Boot API. Root rules live in [../CLAUDE.md](../CLAUDE.md); the specification is
 [../docs/spec.md](../docs/spec.md). This file covers backend-only conventions.
 
-**Stack:** Spring Boot 3.4.4, Java 17, PostgreSQL 16, Flyway, iText 7, Lombok, MapStruct, WebFlux
+**Stack:** Spring Boot 4.1.0, Java 25, PostgreSQL 16, Flyway, iText 9, Lombok, WebFlux
 (`WebClient` for Open Food Facts only — the API itself is servlet-based MVC).
 **Package root:** `com.mealplanner`
 
@@ -13,7 +13,9 @@ Spring Boot API. Root rules live in [../CLAUDE.md](../CLAUDE.md); the specificat
 ./scripts/check-backend.sh
 ```
 
-Run from the repo root. It starts the `db` service and runs `mvn test` in a JDK 17 container.
+Run from the repo root. It starts the `db` service and runs `mvn clean test` in a JDK 25 container.
+The `clean` matters: a pom-only change does not trigger recompilation, so without it the suite can pass
+against stale classes compiled with the previous dependency versions.
 
 ## Structure
 
@@ -41,8 +43,8 @@ top-level packages.
   values in and return values out, no Spring, no repositories. Keep them that way; it is why they are the
   only part of the backend that is cheap to test.
 - **DTO mapping is a static `from(...)` factory** on the response record/class (`RecipeResponse.from(recipe)`),
-  called from the service. MapStruct is on the classpath but the codebase uses hand-written factories —
-  follow the existing pattern rather than mixing both.
+  called from the service. There is no mapping library — MapStruct was declared but never used, and was
+  removed. Follow the hand-written pattern rather than reintroducing one.
 - **Services carry `@Transactional`**, controllers stay thin (validate, delegate, return).
   Read paths use `@Transactional(readOnly = true)`.
 - **Not-found is `ResourceNotFoundException`**, translated to HTTP by `GlobalExceptionHandler`. Never

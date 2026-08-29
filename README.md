@@ -32,6 +32,8 @@ docker compose -p internal up
 
 ## Checks
 
+Every push and pull request runs both of these in GitHub Actions (`.github/workflows/checks.yml`).
+
 The host needs neither Node nor a JDK — both checks run in containers:
 
 ```bash

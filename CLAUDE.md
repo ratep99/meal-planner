@@ -63,8 +63,25 @@ To actually use the app: `docker compose up`, then http://localhost:5173.
   `MacroCalculatorTest` and `ScalingCalculatorTest`, plus a context-load smoke test. Everything with a
   dependency on Spring or the database is untested — `MealPlanService`, `ShoppingListService`, the PDF
   services and every controller. The frontend has no test runner installed at all.
-- **No CI.** Nothing runs on push; the scripts above are the only gate.
+- **CI runs the same scripts** (`.github/workflows/checks.yml`) on every push and pull request, so a
+  green local check and a green CI mean the same thing. There is nothing else automated.
 - **Four oversized components**: `pages/Ingredients.tsx` (652 lines), `pages/planner/MealPlanner.tsx` (622),
   `pages/recipes/RecipeForm.tsx` (565), `pages/profiles/ProfileForm.tsx` (540).
-- **Java 17 → 25 upgrade** is wanted but not started; it needs a Spring Boot major upgrade first. Until it
-  lands, `pom.xml` and `backend/Dockerfile` (JDK 17) are the truth.
+- **TypeScript is held at 6.x**, not 7, because typescript-eslint declares a peer of `typescript <6.1.0`.
+  Everything else is on its latest release. Don't "finish the upgrade" without checking that peer range.
+- **`frontend/.npmrc` sets `legacy-peer-deps=true`** and it is load-bearing: `@vitejs/plugin-react` 6
+  optionally peers a babel chain npm cannot resolve, and without the flag `npm ci` rejects the lock file.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked as GitHub issues on `ratep99/Internal`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `docs/spec.md` is the source of truth; `CONTEXT.md` / `docs/adr/` created lazily. See `docs/agents/domain.md`.

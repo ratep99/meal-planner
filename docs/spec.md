@@ -4,17 +4,14 @@
 > live at `backend/meal-planner-spec.md` and `frontend/meal-planner-spec.md`. Do not recreate those.
 > If code and this document disagree, the code wins — fix this document in the same commit.
 >
-> **Backend stack**: Spring Boot 3.4.4 | PostgreSQL 16 | Java 17 | Maven  
-> **Frontend stack**: React 18 + Vite 6 | TypeScript | shadcn/ui | TailwindCSS | TanStack Query v5 | React Router v6  
+> **Backend stack**: Spring Boot 4.1.0 | PostgreSQL 16 | Java 25 | Maven  
+> **Frontend stack**: React 19 + Vite 8 | TypeScript 6 | shadcn/ui | Tailwind 4 | TanStack Query v5 | React Router v7  
 > **Status**: Implementation reference — describes what is built, not what is wished for.  
-> **Last updated**: 2026-08-19
+> **Last updated**: 2026-08-30
 
-### Planned changes (not yet implemented — do not assume these in code)
-
-- **Java 17 → 25.** Requires a Spring Boot major upgrade first (3.4.4 officially targets Java 17–23),
-  plus verifying Lombok, MapStruct and Hibernate on the new JDK. Tracked, not started.
-  `pom.xml` says `<java.version>17</java.version>` and `backend/Dockerfile` uses
-  `maven:3.9-eclipse-temurin-17` — those are the truth until this lands.
+Every dependency is on its latest release except **TypeScript**, held at 6.x because
+typescript-eslint declares a peer of `typescript <6.1.0`. Moving to TypeScript 7 means giving up
+working lint until that peer range widens.
 
 ---
 
@@ -365,8 +362,8 @@ spring-boot-starter-data-jpa
 spring-boot-starter-validation
 spring-boot-starter-webflux        ← WebClient for OFF
 postgresql, flyway-core
-itext7 (PDF)
-lombok, mapstruct
+itext7 9.x (PDF)
+lombok
 spring-boot-starter-test, h2 (test)
 ```
 
