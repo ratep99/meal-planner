@@ -2,9 +2,14 @@
 
 Household meal planning for two people. React SPA + Spring Boot API + PostgreSQL, run via Docker Compose.
 
-**The full specification is [docs/spec.md](docs/spec.md) — the single source of truth.** Read the section
-relevant to your task before changing behaviour. If the code and the spec disagree, the code wins: fix
-the spec in the same commit rather than leaving the contradiction.
+**The full specification is [docs/spec.md](docs/spec.md) — the single source of truth for how the app
+works.** Read the section relevant to your task before changing behaviour. If the code and the spec
+disagree, the code wins: fix the spec in the same commit rather than leaving the contradiction.
+
+**[ROADMAP.md](ROADMAP.md) is the source of truth for where the project is going** — the two tracks it's
+pursuing and what's open on each. [CONTEXT.md](CONTEXT.md) is a glossary of domain vocabulary (Portion,
+Meal Plan Entry, Profile, Target — precise, opinionated, deliberately thin). [docs/adr/](docs/adr/)
+records *why* a non-obvious decision was made, when the code alone wouldn't tell you.
 
 ## Layout
 
@@ -13,7 +18,10 @@ the spec in the same commit rather than leaving the contradiction.
 | `backend/` | Spring Boot API, package-by-feature under `com.mealplanner` — see `backend/CLAUDE.md` |
 | `frontend/` | Vite + React SPA — see `frontend/CLAUDE.md` |
 | `docs/spec.md` | Domain model, TDEE/scaling math, every API endpoint, UI rules |
-| `scripts/` | Verification scripts (below) and the one-off GitHub migration script |
+| `CONTEXT.md` | Domain glossary — read this before ROADMAP.md or an ADR for precise vocabulary |
+| `ROADMAP.md` | Where the project is going, on both tracks it's pursuing |
+| `docs/adr/` | Why non-obvious, hard-to-reverse decisions were made |
+| `scripts/` | Verification scripts (below) |
 
 ## Verifying your work
 
@@ -73,8 +81,12 @@ To actually use the app: `docker compose up`, then http://localhost:5173.
 
 ## Agent skills
 
-Issues are tracked as GitHub issues on `ratep99/meal-planner`, via the `gh` CLI. Domain docs are
-single-context: `docs/spec.md` is the source of truth; `CONTEXT.md` / `docs/adr/` are created lazily.
+Issues are tracked as GitHub issues on `ratep99/meal-planner`, via the `gh` CLI, labelled with the
+five canonical triage roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`,
+`wontfix`). Domain docs are single-context: `docs/spec.md` is the source of truth for behaviour,
+`CONTEXT.md` for vocabulary, `docs/adr/` for why. All three exist — extend them, don't wait to create
+them lazily; `ROADMAP.md` is where new open questions should land first if they're not yet a concrete
+issue.
 
 If `docs/agents/` exists locally (from running the `setup-matt-pocock-skills` skill), it holds the fuller
 per-repo configuration — issue tracker conventions, triage label vocabulary, wayfinding operations. That
