@@ -74,14 +74,10 @@ To actually use the app: `docker compose up`, then http://localhost:5173.
 
 ## Agent skills
 
-### Issue tracker
+Issues are tracked as GitHub issues on `ratep99/meal-planner`, via the `gh` CLI. Domain docs are
+single-context: `docs/spec.md` is the source of truth; `CONTEXT.md` / `docs/adr/` are created lazily.
 
-Issues and specs are tracked as GitHub issues on `ratep99/Internal`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Default canonical vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: `docs/spec.md` is the source of truth; `CONTEXT.md` / `docs/adr/` created lazily. See `docs/agents/domain.md`.
+If `docs/agents/` exists locally (from running the `setup-matt-pocock-skills` skill), it holds the fuller
+per-repo configuration — issue tracker conventions, triage label vocabulary, wayfinding operations. That
+directory is intentionally gitignored, not part of the repo: re-run the skill on a fresh clone rather than
+expecting it to be there.

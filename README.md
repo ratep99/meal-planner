@@ -61,12 +61,3 @@ The first run of either is slow (dependency download into a cached volume); late
 
 Specification: [docs/spec.md](docs/spec.md)
 
-## Publishing to GitHub
-
-If this clone is not on GitHub yet, run (requires `gh auth login` and SSH to GitHub):
-
-```bash
-./scripts/finish-github-migration.sh
-```
-
-That creates `ratep99/meal-planner`, pushes the monorepo, adds moved notices to the old split repos, and archives them.
