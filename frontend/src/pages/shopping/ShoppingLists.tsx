@@ -94,7 +94,7 @@ export default function ShoppingLists() {
                     <p className="mt-2 text-xs text-text-muted">
                       {list.mealPlanIds.length} meal plan
                       {list.mealPlanIds.length === 1 ? "" : "s"} ·{" "}
-                      {list.ingredientCount ?? list.itemCount ?? "—"} ingredients
+                      {list.totalItems} ingredients
                     </p>
                   </div>
                   <Button
