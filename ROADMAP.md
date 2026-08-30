@@ -11,9 +11,26 @@ matter and what's still vague. See [CLAUDE.md](CLAUDE.md) for engineering conven
 The actual reason this app exists: planning real weeks for two people, adapted to their current goals,
 producing a PDF plan and a shopping list that get used physically at the store.
 
-**Confirmed working**, verified live in-session: profile creation (React 19 + react-hook-form + zod 4,
-live TDEE preview), planner drag-and-drop (dnd-kit 10), and PDF generation mechanics for all three
-export endpoints (day / full week / shopping list, all iText 9).
+**Confirmed working**, verified live in a full click-through pass (recipes, planner, shopping, ingredients,
+profiles): profile create/edit with live TDEE preview (React 19 + react-hook-form + zod 4), recipe
+edit/save, ingredient search/sort/filter, planner drag-and-drop with entries landing at portion 1.0 (no
+auto-scaling — [ADR-0001](docs/adr/0001-portions-default-unscaled.md)), shopping list generation and
+aggregation, and all three PDF exports (day / full week / shopping list, iText 9) — content and quantities
+checked against the source recipes, not just "it returned a 200".
+
+That pass also found and fixed three real bugs, not yet released:
+
+- Planner recipe-filter labels were missing their second letter ("Beakfast", "Lnch") — a duplicate
+  `.slice(1)` in `RecipeSidebar.tsx`, present since the component's first commit.
+- The profile list mislabeled the goal-adjusted daily target as "TDEE" — harmless for a MAINTAIN profile
+  where the two numbers coincide, but wrong by hundreds of kcal for CUT/BULK (confirmed with a throwaway
+  CUT profile: real TDEE 2759 vs. the mislabeled 2345 it would have shown).
+- The shopping lists page always showed "— ingredients": the frontend read `ingredientCount`/`itemCount`,
+  fields that don't exist on the API response — the real field is `totalItems`. `frontend/src/types/shopping.ts`
+  had both wrong names typed as optional, which is exactly why `tsc` never caught it.
+
+One more is filed, not yet fixed: [issue #7](https://github.com/ratep99/meal-planner/issues/7) — the full
+week PDF export can split a day's meal block across a page boundary when a day has four full meals.
 
 **Open:**
 

@@ -6,9 +6,7 @@ export type ShoppingListSummary = {
   dateRangeStart: string;
   dateRangeEnd: string;
   mealPlanIds: number[];
-  /** Optional counts from API */
-  itemCount?: number;
-  ingredientCount?: number;
+  totalItems: number;
 };
 
 export type ShoppingListItem = {

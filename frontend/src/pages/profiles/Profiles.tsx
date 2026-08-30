@@ -67,7 +67,7 @@ export default function Profiles() {
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>TDEE</dt>
+                  <dt>Target</dt>
                   <dd className="tabular-nums font-medium text-accent">
                     {p.calculatedKcal} kcal
                   </dd>

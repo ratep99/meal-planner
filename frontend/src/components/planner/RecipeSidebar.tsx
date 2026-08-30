@@ -136,7 +136,7 @@ export function RecipeSidebar({ recipes, className }: RecipeSidebarProps) {
                 : "bg-surface-muted text-text-secondary",
             )}
           >
-            {m[0] + m.slice(1).toLowerCase().slice(1)}
+            {m[0] + m.slice(1).toLowerCase()}
           </button>
         ))}
       </div>

@@ -101,12 +101,7 @@ function normalizeList(raw: unknown): ShoppingListSummary[] {
         typeof o.dateRangeStart === "string" ? o.dateRangeStart : "",
       dateRangeEnd: typeof o.dateRangeEnd === "string" ? o.dateRangeEnd : "",
       mealPlanIds: normalizeMealPlanIds(o.mealPlanIds),
-      itemCount:
-        typeof o.itemCount === "number" ? o.itemCount : undefined,
-      ingredientCount:
-        typeof o.ingredientCount === "number"
-          ? o.ingredientCount
-          : undefined,
+      totalItems: typeof o.totalItems === "number" ? o.totalItems : 0,
     });
   }
   return out;
@@ -127,6 +122,7 @@ function normalizeDetail(id: number, raw: unknown): ShoppingListDetail {
       dateRangeStart: "",
       dateRangeEnd: "",
       mealPlanIds: [],
+      totalItems: 0,
       items: [],
     };
   }
@@ -148,11 +144,8 @@ function normalizeDetail(id: number, raw: unknown): ShoppingListDetail {
       typeof o.dateRangeStart === "string" ? o.dateRangeStart : "",
     dateRangeEnd: typeof o.dateRangeEnd === "string" ? o.dateRangeEnd : "",
     mealPlanIds: normalizeMealPlanIds(o.mealPlanIds),
-    itemCount: typeof o.itemCount === "number" ? o.itemCount : items.length,
-    ingredientCount:
-      typeof o.ingredientCount === "number"
-        ? o.ingredientCount
-        : items.length,
+    totalItems:
+      typeof o.totalItems === "number" ? o.totalItems : items.length,
     items,
   };
 }
