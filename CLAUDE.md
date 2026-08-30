@@ -13,7 +13,6 @@ the spec in the same commit rather than leaving the contradiction.
 | `backend/` | Spring Boot API, package-by-feature under `com.mealplanner` — see `backend/CLAUDE.md` |
 | `frontend/` | Vite + React SPA — see `frontend/CLAUDE.md` |
 | `docs/spec.md` | Domain model, TDEE/scaling math, every API endpoint, UI rules |
-| `legacy/python-mealplan/` | Dead prototype, kept for reference only. **Never change it, never cite it as precedent.** |
 | `scripts/` | Verification scripts (below) and the one-off GitHub migration script |
 
 ## Verifying your work

@@ -14,12 +14,6 @@ Open **http://localhost:5173**. The API is also on **http://localhost:8080** if 
 
 Postgres data, Maven cache, uploaded recipe images, and `node_modules` live in named Docker volumes, so `docker compose down` (without `-v`) does not wipe the database.
 
-If you previously used Compose from a folder named `Internal`, reuse the old volumes with:
-
-```bash
-docker compose -p internal up
-```
-
 ## When to rebuild or restart
 
 | You changed | What to do |
@@ -57,7 +51,6 @@ The first run of either is slow (dependency download into a cached volume); late
 | [backend/](backend/) | Spring Boot API — see [backend/README.md](backend/README.md) |
 | [frontend/](frontend/) | Vite + React UI |
 | [docs/spec.md](docs/spec.md) | Full specification — single source of truth |
-| [legacy/python-mealplan/](legacy/python-mealplan/) | Older Python/YAML meal plan prototype (not part of the Docker stack) |
 
 Specification: [docs/spec.md](docs/spec.md)
 
