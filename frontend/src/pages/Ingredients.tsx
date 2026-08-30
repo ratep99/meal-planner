@@ -59,7 +59,8 @@ function sortRows(
 ): Ingredient[] {
   const m = dir === "asc" ? 1 : -1;
   return [...rows].sort((a, b) => {
-    let cmp = 0;
+    // No initialiser: every branch below, including `default`, assigns cmp.
+    let cmp: number;
     switch (key) {
       case "name":
         cmp = a.name.localeCompare(b.name);

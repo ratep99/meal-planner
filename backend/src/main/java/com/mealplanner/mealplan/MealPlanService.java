@@ -96,8 +96,9 @@ public class MealPlanService {
                 e.getUserProfile().getId().equals(profile.getId())
                 && e.getMealType() == request.getMealType());
 
-        double scalingFactor = ScalingCalculator.calculateScalingFactor(
-                profile, recipe, request.getMealsPerDay());
+        // A meal is planned as the recipe is written unless the caller asks for a
+        // different portion. Nothing is multiplied on the user's behalf.
+        double scalingFactor = portionFactorOf(request);
         MacroTotals macros = ScalingCalculator.sumScaledMacros(
                 recipe.getIngredients(), scalingFactor);
 
@@ -139,8 +140,7 @@ public class MealPlanService {
         UserProfile profile = findProfileOrThrow(request.getUserProfileId());
         Recipe recipe = findRecipeOrThrow(request.getRecipeId());
 
-        double scalingFactor = ScalingCalculator.calculateScalingFactor(
-                profile, recipe, request.getMealsPerDay());
+        double scalingFactor = portionFactorOf(request);
         MacroTotals macros = ScalingCalculator.sumScaledMacros(
                 recipe.getIngredients(), scalingFactor);
 
@@ -242,10 +242,11 @@ public class MealPlanService {
         for (MealPlanEntry entry : entries) {
             Recipe recipe = findRecipeOrThrow(entry.getRecipe().getId());
             recipe.getIngredients().size();
-            double scalingFactor = ScalingCalculator.calculateScalingFactor(
-                    profile, recipe, entry.getMealsPerDay());
+            // Keep the portion the user chose. Editing a profile refreshes the macro
+            // totals (the recipe's ingredients may have changed) but must never
+            // silently re-portion meals that are already planned.
+            double scalingFactor = entry.getScalingFactor();
             MacroTotals macros = ScalingCalculator.sumScaledMacros(recipe.getIngredients(), scalingFactor);
-            entry.setScalingFactor(scalingFactor);
             entry.setCalculatedKcal((int) Math.round(macros.getKcal()));
             entry.setCalculatedProtein(macros.getProtein());
             entry.setCalculatedCarbs(macros.getCarbs());
@@ -296,6 +297,12 @@ public class MealPlanService {
             day.setDayNumber(n);
             plan.getDays().add(day);
         }
+    }
+
+    /** Explicit portion multiplier, or 1.0 — the recipe exactly as written. */
+    private double portionFactorOf(MealPlanEntryRequest request) {
+        Double requested = request.getScalingFactor();
+        return requested != null ? requested : 1.0;
     }
 
     private MealPlan findOrThrow(Long id) {

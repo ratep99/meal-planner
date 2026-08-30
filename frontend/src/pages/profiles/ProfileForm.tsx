@@ -28,12 +28,16 @@ import {
 import type { ProfileTdeePreviewPayload } from "@/types/profile";
 import { cn } from "@/lib/utils";
 
+// Numeric fields are registered with `valueAsNumber: true` rather than validated with
+// z.coerce.number(): as of Zod 4 a coerced number's *input* type is `unknown`, which no
+// longer lines up with react-hook-form's resolver generics. Letting the input element do
+// the conversion keeps the form's input and output types identical.
 const profileSchema = z.object({
   displayName: z.string().min(1, "Name is required"),
   gender: z.enum(["MALE", "FEMALE"]),
-  age: z.coerce.number().int().min(1).max(120),
-  heightCm: z.coerce.number().min(50).max(260),
-  weightKg: z.coerce.number().min(20).max(400),
+  age: z.number().int().min(1).max(120),
+  heightCm: z.number().min(50).max(260),
+  weightKg: z.number().min(20).max(400),
   activityLevel: z.enum([
     "SEDENTARY",
     "LIGHT",
@@ -42,8 +46,8 @@ const profileSchema = z.object({
     "VERY_ACTIVE",
   ]),
   goal: z.enum(["CUT", "MAINTAIN", "BULK"]),
-  proteinMultiplier: z.coerce.number().min(0.5).max(5),
-  fatMultiplier: z.coerce.number().min(0.2).max(3),
+  proteinMultiplier: z.number().min(0.5).max(5),
+  fatMultiplier: z.number().min(0.2).max(3),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -320,7 +324,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 id="age"
                 type="number"
                 min={1}
-                {...form.register("age")}
+                {...form.register("age", { valueAsNumber: true })}
               />
             </div>
             <div className="space-y-2">
@@ -329,7 +333,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 id="heightCm"
                 type="number"
                 min={1}
-                {...form.register("heightCm")}
+                {...form.register("heightCm", { valueAsNumber: true })}
               />
             </div>
             <div className="space-y-2">
@@ -339,7 +343,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 type="number"
                 step="0.1"
                 min={1}
-                {...form.register("weightKg")}
+                {...form.register("weightKg", { valueAsNumber: true })}
               />
             </div>
           </div>
@@ -434,7 +438,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 type="number"
                 step={0.1}
                 min={0.5}
-                {...form.register("proteinMultiplier")}
+                {...form.register("proteinMultiplier", { valueAsNumber: true })}
               />
             </div>
             <div className="space-y-2">
@@ -444,7 +448,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 type="number"
                 step={0.1}
                 min={0.2}
-                {...form.register("fatMultiplier")}
+                {...form.register("fatMultiplier", { valueAsNumber: true })}
               />
             </div>
           </div>

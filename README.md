@@ -14,12 +14,6 @@ Open **http://localhost:5173**. The API is also on **http://localhost:8080** if 
 
 Postgres data, Maven cache, uploaded recipe images, and `node_modules` live in named Docker volumes, so `docker compose down` (without `-v`) does not wipe the database.
 
-If you previously used Compose from a folder named `Internal`, reuse the old volumes with:
-
-```bash
-docker compose -p internal up
-```
-
 ## When to rebuild or restart
 
 | You changed | What to do |
@@ -30,22 +24,33 @@ docker compose -p internal up
 | Flyway SQL (`backend/src/main/resources/db/migration`) | Restart the `backend` service |
 | `docker-compose.yaml` or Dockerfiles | `docker compose up --build` |
 
+## Checks
+
+Every push and pull request runs both of these in GitHub Actions (`.github/workflows/checks.yml`).
+
+The host needs neither Node nor a JDK — both checks run in containers:
+
+```bash
+./scripts/check-frontend.sh    # tsc + eslint (--build also runs the vite build)
+```
+
+```bash
+./scripts/check-backend.sh     # mvn test, starts the db service first
+```
+
+```bash
+./scripts/check-all.sh         # both
+```
+
+The first run of either is slow (dependency download into a cached volume); later runs are quick.
+
 ## Repository layout
 
 | Path | Description |
 | ---- | ----------- |
 | [backend/](backend/) | Spring Boot API — see [backend/README.md](backend/README.md) |
 | [frontend/](frontend/) | Vite + React UI |
-| [legacy/python-mealplan/](legacy/python-mealplan/) | Older Python/YAML meal plan prototype (not part of the Docker stack) |
+| [docs/spec.md](docs/spec.md) | Full specification — single source of truth |
 
-Specification: [backend/meal-planner-spec.md](backend/meal-planner-spec.md)
+Specification: [docs/spec.md](docs/spec.md)
 
-## Publishing to GitHub
-
-If this clone is not on GitHub yet, run (requires `gh auth login` and SSH to GitHub):
-
-```bash
-./scripts/finish-github-migration.sh
-```
-
-That creates `ratep99/meal-planner`, pushes the monorepo, adds moved notices to the old split repos, and archives them.

@@ -29,3 +29,9 @@ frontend/.DS_Store
 # Logs
 logs/
 *.log
+
+# Per-repo output of the setup-matt-pocock-skills skill (issue tracker, triage
+# labels, domain doc layout). Kept locally so the engineering skills still work
+# on this machine, not pushed — the "wayfinder"/"triage" workflow language in
+# these files reads as agent-swarm internals rather than project documentation.
+docs/agents/

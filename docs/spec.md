@@ -1,9 +1,17 @@
 # Meal Planner App — Specification (Backend + Frontend)
 
-> **Backend stack**: Spring Boot 3.4.x | PostgreSQL | Java 17 | Maven  
-> **Frontend stack**: React 18 + Vite | TypeScript | shadcn/ui | TailwindCSS | TanStack Query | React Router v6  
-> **Status**: Planning + implementation reference — backend and frontend should stay aligned with this document.  
-> **Last updated**: 2026-04-06
+> **This file is the single source of truth.** It replaced the two drifted copies that used to
+> live at `backend/meal-planner-spec.md` and `frontend/meal-planner-spec.md`. Do not recreate those.
+> If code and this document disagree, the code wins — fix this document in the same commit.
+>
+> **Backend stack**: Spring Boot 4.1.0 | PostgreSQL 16 | Java 25 | Maven  
+> **Frontend stack**: React 19 + Vite 8 | TypeScript 6 | shadcn/ui | Tailwind 4 | TanStack Query v5 | React Router v7  
+> **Status**: Implementation reference — describes what is built, not what is wished for.  
+> **Last updated**: 2026-08-30
+
+Every dependency is on its latest release except **TypeScript**, held at 6.x because
+typescript-eslint declares a peer of `typescript <6.1.0`. Moving to TypeScript 7 means giving up
+working lint until that peer range widens.
 
 ---
 
@@ -187,12 +195,12 @@ MealPlanEntry {
 }
 ```
 
-**Scaling logic**
+**Portion logic**
+
+A meal is planned exactly as its recipe is written. **Nothing is scaled on the user's behalf.**
 
 ```
-mealKcalTarget = userProfile.calculatedKcal / mealsPerDay
-
-scalingFactor = mealKcalTarget / recipe.totalKcal
+scalingFactor = request.scalingFactor, or 1.0 when absent
 
 For each RecipeIngredient:
   scaledQuantity = quantity × scalingFactor
@@ -201,7 +209,21 @@ For PIECE ingredients:
   scaledQuantity = round to nearest integer, minimum 1
 ```
 
-When a **UserProfile** is updated, all **MealPlanEntry** rows for that profile are recomputed from stored `recipeId`, `mealsPerDay`, and updated profile targets.
+`scalingFactor` is accepted on entry create/update (range 0.1–10.0) and persisted, so a portion is
+always a choice someone made rather than something the app inferred. A day total is therefore the sum
+of what is actually planned, and may legitimately sit under or over the profile's target.
+
+Earlier versions derived the factor automatically as `calculatedKcal / mealsPerDay / recipe.totalKcal`,
+forcing every entry — snacks included — onto an identical calorie figure. That is gone: it silently
+multiplied ingredient quantities (a 192 kcal snack became 920 kcal, i.e. 120 g of whey and 720 g of
+kiwi) and, because `mealsPerDay` defaulted to 3 while the planner shows four meal rows, it overshot
+the daily target by a third.
+
+`mealsPerDay` is still stored on the entry, but only the explicit fit-to-target action reads it.
+
+When a **UserProfile** is updated, **MealPlanEntry** macro totals are recomputed from the recipe's
+current ingredients, keeping each entry's stored `scalingFactor`. Editing a profile never re-portions
+meals that are already planned.
 
 ---
 
@@ -339,9 +361,10 @@ spring-boot-starter-web
 spring-boot-starter-data-jpa
 spring-boot-starter-validation
 spring-boot-starter-webflux        ← WebClient for OFF
-postgresql, flyway-core
-itext7 (PDF)
-lombok, mapstruct
+postgresql
+spring-boot-starter-flyway, flyway-database-postgresql
+itext7 9.x (PDF)
+lombok
 spring-boot-starter-test, h2 (test)
 ```
 
@@ -352,6 +375,11 @@ No `spring-boot-starter-security`, no JJWT — API is open by design for this ho
 ## Database migrations (Flyway)
 
 See `src/main/resources/db/migration/`. Notable: **V10** standalone profiles (no `users` FK) and **`meals_per_day`** on meal plan entries.
+
+Requires `spring-boot-starter-flyway` on the classpath (Spring Boot 4 moved `FlywayAutoConfiguration` there
+from `spring-boot-autoconfigure`; `flyway-core` alone no longer triggers it, and the failure is silent —
+Flyway simply never runs — until Hibernate's `ddl-auto=validate` reports a missing table against a fresh
+database).
 
 ---
 
@@ -373,7 +401,7 @@ Use `application-local.properties` for secrets (not committed). No JWT variables
 
 1. **PIECE rounding (scaling):** nearest integer, **minimum 1**.
 2. **Recipe macros:** recalculate on every `RecipeIngredient` change. **Deleting a recipe** deletes every `MealPlanEntry` that referenced it, removes `{id}.jpg` if present, then deletes the recipe (`recipe_ingredients` cascade in DB).
-3. **Scaling factor:** `profile.calculatedKcal` (**goal-adjusted**) / `mealsPerDay` / `recipe.totalKcal`; persisted on entry; refreshed when profile or entry changes.
+3. **Portion factor:** defaults to **1.0** — the recipe as written. Set explicitly per entry (0.1–10.0) and persisted. Never derived from the profile, and never changed behind the user's back.
 4. **Shopping list:** aggregate same ingredient across plans; no duplicate rows.
 5. **`manualOverride`:** block OFF overwrite of nutrition fields.
 6. **Meal plan `daysCount`:** 1–14; **PUT** may send only `{ "daysCount": N }` (partial update).
@@ -397,8 +425,7 @@ Use `application-local.properties` for secrets (not committed). No JWT variables
 
 # Part B — Frontend
 
-> **Target:** Desktop + iPad (landscape). Light theme. **UI language:** English.  
-> **Last updated:** 2026-04-06
+> **Target:** Desktop + iPad (landscape). Light theme. **UI language:** English.
 
 ## Tech stack
 
@@ -409,8 +436,13 @@ tailwindcss, shadcn/ui
 @dnd-kit/core, @dnd-kit/sortable
 react-hook-form, zod
 axios                    ← baseURL from VITE_API_URL (no auth headers in household mode)
-recharts
 react-dropzone           ← recipe image upload; multipart field name **image** (matches Spring @RequestParam)
+sonner                   ← toasts (used by every mutation hook)
+vite-plugin-pwa          ← offline shopping list
+
+Not installed despite what older drafts claimed: **recharts**. There is no charting library in
+`package.json`; macro visuals are hand-rolled (`MacroBar`, `MacroChips`). Do not import it without
+adding the dependency first.
 ```
 
 **Household deploy:** app may open directly on **Dashboard** with no login. `VITE_API_URL` points at the API (e.g. `http://localhost:8080`). Recipe images: `{baseURL}/uploads/recipes/{imageFilename}` from the recipe DTO. Do **not** set `Content-Type: multipart/form-data` manually on upload — let the browser set the boundary.
@@ -472,7 +504,7 @@ font-body:    'DM Sans'
 /planner, /planner/:mealPlanId
 /shopping, /shopping/:id
 /ingredients
-/profiles, /profiles/:id/edit
+/profiles, /profiles/new, /profiles/:id/edit
 /settings
 ```
 
@@ -490,7 +522,10 @@ font-body:    'DM Sans'
 
 ### 1. Dashboard `/dashboard`
 
-- Today’s meals for active profile; macro summary vs targets; upcoming prep list; quick actions (new recipe, planner, shopping).
+- **Weekly overview (Mon–Sun), read-only** for the active profile — a grid of 7 day columns × meal-type
+  rows, with today highlighted. It does not allow editing; every slot links into `/planner`.
+- Macro totals per day vs the profile's goal-adjusted targets; quick actions (new recipe, planner, shopping).
+- Implemented in `src/pages/Dashboard.tsx` on top of `lib/week-utils.ts` and `lib/dashboard-plan.ts`.
 
 ### 2. Recipes `/recipes`
 
@@ -528,7 +563,18 @@ font-body:    'DM Sans'
 
 ## Shared components
 
-`MacroBar`, `RecipeCard`, `MealTypeChip`, `MacroChips`, `IngredientSearch`, `PlannerSlot`, `ProfileSwitcher` — props as in prior spec (actual / target macros, draggable recipe, etc.).
+Actual files under `src/components/`:
+
+```text
+layout/ShellLayout.tsx
+shared/  MacroBar, MacroChips, MealTypeChip, RecipeCard, IngredientSearch, ProfileSwitcher
+planner/ PlannerGrid, PlannerToolbar, PlannerWeekActionDialog, RecipeSidebar, RecipeQuickModal, MacroFooter
+shopping/GenerateShoppingModal
+ui/      button, dialog, input, label, slide-over, textarea   ← the only shadcn primitives vendored so far
+```
+
+There is no `PlannerSlot` component — slot rendering lives inside `PlannerGrid`. When a UI primitive is
+missing from `ui/`, vendor the shadcn one rather than hand-rolling it.
 
 ---
 

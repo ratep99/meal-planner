@@ -1,16 +1,19 @@
+# POSTGRES_USER / POSTGRES_PASSWORD fall back to local-dev-only defaults so
+# `docker compose up` works with zero setup. Override both in a root ".env"
+# (gitignored, see .env.example) for anything that isn't a throwaway local db.
 services:
   db:
     image: postgres:16
     environment:
       POSTGRES_DB: mealplanner
-      POSTGRES_USER: petar
-      POSTGRES_PASSWORD: localdev
+      POSTGRES_USER: ${POSTGRES_USER:-petar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdev}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U petar -d mealplanner"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-petar} -d mealplanner"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -23,8 +26,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mealplanner
-      SPRING_DATASOURCE_USERNAME: petar
-      SPRING_DATASOURCE_PASSWORD: localdev
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-petar}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-localdev}
       APP_UPLOAD_DIR: /app/uploads
     volumes:
       - ./backend:/app

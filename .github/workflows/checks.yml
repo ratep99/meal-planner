@@ -1,0 +1,30 @@
+name: checks
+
+# The repo's only automated gate. It runs exactly the scripts a developer runs
+# locally rather than reimplementing them with setup-java / setup-node, so CI
+# and local verification can never drift apart.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Backend — mvn clean test (JDK 25 container, Postgres service)
+        run: ./scripts/check-backend.sh
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frontend — tsc, eslint, production build
+        run: ./scripts/check-frontend.sh --build
