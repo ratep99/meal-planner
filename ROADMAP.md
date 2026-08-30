@@ -32,6 +32,24 @@ That pass also found and fixed three real bugs, not yet released:
 One more is filed, not yet fixed: [issue #7](https://github.com/ratep99/meal-planner/issues/7) — the full
 week PDF export can split a day's meal block across a page boundary when a day has four full meals.
 
+**Code-quality findings from a source read** (not the click-through pass above — this was reading
+`ShoppingListService`, `RecipeService`, the exception handler, and every hook's `onError`, looking for
+what a click-through can't surface). Filed as `ready-for-human`, not `ready-for-agent`: these are meant as
+deliberate practice for the person building this, not autopilot work.
+
+- Every mutation hook swallows the backend's actual error message and shows a fixed generic string —
+  confirmed across all 19 `onError` sites, none of which reads `err.response`. The backend already returns
+  specific messages (e.g. a 409 on deleting a meal plan that still has a shopping list attached says so);
+  none of that reaches the user. [Issue #9](https://github.com/ratep99/meal-planner/issues/9)
+- N+1 queries on the full-week PDF export and shopping list generation — the two most-used endpoints once
+  the app is in real weekly use. One query already does this right for the single-day PDF
+  (`MealPlanDayRepository.findByMealPlanIdAndDayNumberWithDetails`, `JOIN FETCH`); `MealPlanRepository` has
+  no equivalent, so both paths walk `plan → days → entries → recipe → ingredients → ingredient` one lazy
+  query at a time. [Issue #10](https://github.com/ratep99/meal-planner/issues/10)
+- Deleting a recipe removes it from every meal plan entry that used it, past or future — correct behavior
+  (no DB cascade on that FK), but the only warning is a generic `confirm("Delete this recipe?")` that
+  doesn't say what's about to disappear. [Issue #11](https://github.com/ratep99/meal-planner/issues/11)
+
 **Open:**
 
 - No portion control in the planner UI yet — the backend accepts an explicit `scalingFactor` per entry
