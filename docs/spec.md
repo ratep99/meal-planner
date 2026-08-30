@@ -361,7 +361,8 @@ spring-boot-starter-web
 spring-boot-starter-data-jpa
 spring-boot-starter-validation
 spring-boot-starter-webflux        ← WebClient for OFF
-postgresql, flyway-core
+postgresql
+spring-boot-starter-flyway, flyway-database-postgresql
 itext7 9.x (PDF)
 lombok
 spring-boot-starter-test, h2 (test)
@@ -374,6 +375,11 @@ No `spring-boot-starter-security`, no JJWT — API is open by design for this ho
 ## Database migrations (Flyway)
 
 See `src/main/resources/db/migration/`. Notable: **V10** standalone profiles (no `users` FK) and **`meals_per_day`** on meal plan entries.
+
+Requires `spring-boot-starter-flyway` on the classpath (Spring Boot 4 moved `FlywayAutoConfiguration` there
+from `spring-boot-autoconfigure`; `flyway-core` alone no longer triggers it, and the failure is silent —
+Flyway simply never runs — until Hibernate's `ddl-auto=validate` reports a missing table against a fresh
+database).
 
 ---
 

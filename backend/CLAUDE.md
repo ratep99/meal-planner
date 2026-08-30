@@ -60,6 +60,13 @@ top-level packages.
 - **No Spring Security, no JWT, no auth of any kind.** See the root CLAUDE.md.
 - **Flyway for every schema change.** Next migration is `V11__…`. `spring.jpa.hibernate.ddl-auto=validate`
   is deliberate — the app refuses to start if entities and schema disagree, which is the intended alarm.
+- **`spring-boot-starter-flyway` is required, not `flyway-core` alone.** Spring Boot 4 split
+  `FlywayAutoConfiguration` out of `spring-boot-autoconfigure` into this starter. Without it Flyway never
+  runs and doesn't complain — it just never migrates, silently, and the first sign is Hibernate's
+  `ddl-auto=validate` failing with "missing table" on whatever ran first. This only shows up against a
+  *fresh* database, which is exactly why a warm local `pgdata` volume can hide it for weeks: verify a
+  Flyway-touching change against `docker compose -p <throwaway> up -d --wait db`, an isolated project name
+  with its own empty volume, not the one your dev data lives in.
 - **Recipe macros recalculate on every `RecipeIngredient` save.** `RecipeResponse.from()` always computes
   fresh totals; there is no cached macro column to keep in sync and none should be added.
 - **PIECE ingredients round to the nearest integer, minimum 1** when scaling. A plan that says "0 eggs"
